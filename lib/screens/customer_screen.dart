@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '/screens/explore_pharma.dart';
+import '/screens/explore_medicine.dart';
 
 class CustomerScreen extends StatefulWidget {
   const CustomerScreen({super.key});
@@ -17,7 +19,7 @@ class _CustomerScreenState extends State<CustomerScreen>
   late final Animation<double> _sidebarAnimation;
 
   final double sidebarWidthDesktop = 250;
-  final double sidebarWidthMobile = 180;
+  final double sidebarWidthMobile = 160; // smaller for small phones
 
   @override
   void initState() {
@@ -49,10 +51,19 @@ class _CustomerScreenState extends State<CustomerScreen>
     super.dispose();
   }
 
+  Widget _getActivePage() {
+    if (activePage == 'customerlist') {
+      return const ExploreMedicine();
+    } else {
+      return const PharmaList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isMobile = screenWidth < 900;
+    double scaleFactor = screenWidth / 400; // Base for small phones like A16
 
     return Scaffold(
       body: Stack(
@@ -67,19 +78,19 @@ class _CustomerScreenState extends State<CustomerScreen>
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: EdgeInsets.all(20 * scaleFactor),
                         child: Image.asset(
                           "assets/images/logo.png",
-                          width: 180,
-                          height: 100,
+                          width: 180 * scaleFactor,
+                          height: 100 * scaleFactor,
                         ),
                       ),
                       _sidebarItem(
                         icon: Icons.local_pharmacy,
                         label: "Pharmacies",
                         selected: activePage == 'customerlist',
-                        iconSize: 22,
-                        fontSize: 14,
+                        iconSize: 22 * scaleFactor,
+                        fontSize: 14 * scaleFactor,
                         onTap: () {
                           setState(() {
                             activePage = 'customerlist';
@@ -90,8 +101,8 @@ class _CustomerScreenState extends State<CustomerScreen>
                         icon: Icons.shopping_cart,
                         label: "Explore Medicine",
                         selected: activePage == 'explore-medicine',
-                        iconSize: 22,
-                        fontSize: 14,
+                        iconSize: 22 * scaleFactor,
+                        fontSize: 14 * scaleFactor,
                         onTap: () {
                           setState(() {
                             activePage = 'explore-medicine';
@@ -99,11 +110,12 @@ class _CustomerScreenState extends State<CustomerScreen>
                         },
                       ),
                       const Spacer(),
-                      const Padding(
-                        padding: EdgeInsets.all(8),
+                      Padding(
+                        padding: EdgeInsets.all(8 * scaleFactor),
                         child: Text(
                           "All rights reserved © Daf Tech 2025",
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                          style: TextStyle(
+                              color: Colors.white70, fontSize: 12 * scaleFactor),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -125,9 +137,9 @@ class _CustomerScreenState extends State<CustomerScreen>
                     children: [
                       // Top bar
                       Container(
-                        height: 60,
                         color: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.fromLTRB(
+                            20 * scaleFactor, 25 * scaleFactor, 20 * scaleFactor, 10 * scaleFactor), // moved content lower
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -136,14 +148,14 @@ class _CustomerScreenState extends State<CustomerScreen>
                               GestureDetector(
                                 onTap: toggleSidebar,
                                 child: Container(
-                                  padding: const EdgeInsets.all(12), // tap area
+                                  padding: EdgeInsets.all(12 * scaleFactor),
                                   color: Colors.transparent,
                                   child: AnimatedBuilder(
                                     animation: _controller,
                                     builder: (_, child) {
                                       return SizedBox(
-                                        width: 24, // smaller width
-                                        height: 20, // smaller height
+                                        width: 24 * scaleFactor,
+                                        height: 20 * scaleFactor,
                                         child: Stack(
                                           alignment: Alignment.center,
                                           children: [
@@ -152,8 +164,8 @@ class _CustomerScreenState extends State<CustomerScreen>
                                               child: Align(
                                                 alignment: Alignment.topCenter,
                                                 child: Container(
-                                                  height: 2, // thinner line
-                                                  width: 20, // shorter line
+                                                  height: 2,
+                                                  width: 20 * scaleFactor,
                                                   color: const Color(0xFF1F8C4D),
                                                 ),
                                               ),
@@ -164,7 +176,7 @@ class _CustomerScreenState extends State<CustomerScreen>
                                                 alignment: Alignment.center,
                                                 child: Container(
                                                   height: 2,
-                                                  width: 20,
+                                                  width: 20 * scaleFactor,
                                                   color: const Color(0xFF1F8C4D),
                                                 ),
                                               ),
@@ -175,7 +187,7 @@ class _CustomerScreenState extends State<CustomerScreen>
                                                 alignment: Alignment.bottomCenter,
                                                 child: Container(
                                                   height: 2,
-                                                  width: 20,
+                                                  width: 20 * scaleFactor,
                                                   color: const Color(0xFF1F8C4D),
                                                 ),
                                               ),
@@ -188,21 +200,22 @@ class _CustomerScreenState extends State<CustomerScreen>
                                 ),
                               ),
                             const SizedBox(width: 10),
-                            // Welcome + logout
+
                             Row(
                               children: [
                                 Text(
                                   "Welcome, $userFullName",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                      fontSize: 16 * scaleFactor),
                                 ),
-                                const SizedBox(width: 10),
+                                SizedBox(width: 10 * scaleFactor),
                                 IconButton(
                                   onPressed: () {},
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.logout,
                                     color: Colors.redAccent,
+                                    size: 24 * scaleFactor,
                                   ),
                                 ),
                               ],
@@ -210,20 +223,12 @@ class _CustomerScreenState extends State<CustomerScreen>
                           ],
                         ),
                       ),
-                      // Content area
+
                       Expanded(
                         child: Container(
                           color: const Color(0xFFF5F5F5),
-                          padding: const EdgeInsets.all(20),
-                          child: Center(
-                            child: Text(
-                              activePage == 'customerlist'
-                                  ? "Pharmacies Page"
-                                  : "Explore Medicine Page",
-                              style: const TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                          padding: EdgeInsets.all(20 * scaleFactor),
+                          child: _getActivePage(),
                         ),
                       ),
                     ],
@@ -251,20 +256,20 @@ class _CustomerScreenState extends State<CustomerScreen>
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 15),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10 * scaleFactor, vertical: 15 * scaleFactor),
                           child: Image.asset(
                             "assets/images/logo.png",
-                            width: 120,
-                            height: 70,
+                            width: 120 * scaleFactor,
+                            height: 70 * scaleFactor,
                           ),
                         ),
                         _sidebarItem(
                           icon: Icons.local_pharmacy,
                           label: "Pharmacies",
                           selected: activePage == 'customerlist',
-                          iconSize: 20,
-                          fontSize: 13,
+                          iconSize: 20 * scaleFactor,
+                          fontSize: 13 * scaleFactor,
                           onTap: () {
                             setState(() {
                               activePage = 'customerlist';
@@ -276,8 +281,8 @@ class _CustomerScreenState extends State<CustomerScreen>
                           icon: Icons.shopping_cart,
                           label: "Explore Medicine",
                           selected: activePage == 'explore-medicine',
-                          iconSize: 20,
-                          fontSize: 13,
+                          iconSize: 20 * scaleFactor,
+                          fontSize: 13 * scaleFactor,
                           onTap: () {
                             setState(() {
                               activePage = 'explore-medicine';
@@ -286,11 +291,12 @@ class _CustomerScreenState extends State<CustomerScreen>
                           },
                         ),
                         const Spacer(),
-                        const Padding(
-                          padding: EdgeInsets.all(8),
+                        Padding(
+                          padding: EdgeInsets.all(8 * scaleFactor),
                           child: Text(
                             "All rights reserved © Daf Tech 2025",
-                            style: TextStyle(color: Colors.white70, fontSize: 12),
+                            style: TextStyle(
+                                color: Colors.white70, fontSize: 12 * scaleFactor),
                             textAlign: TextAlign.center,
                           ),
                         ),
